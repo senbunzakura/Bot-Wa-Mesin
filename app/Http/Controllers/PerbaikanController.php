@@ -1,0 +1,125 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Perbaikan;
+use App\Models\LaporanKerusakan;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+
+class PerbaikanController extends Controller
+{
+    public function index()
+    {
+        $perbaikan = Perbaikan::with('laporanKerusakan', 'teknisi')->get();
+
+        return view('perbaikan.index', compact('perbaikan'));
+    }
+
+    public function create()
+    {
+        $laporans = LaporanKerusakan::all();
+        $teknisis = User::where('role', 'Mekanik')->get();
+
+        return view('perbaikan.create', compact('laporans', 'teknisis'));
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'laporan_perbaikan_id' => 'required|exists:laporan_kerusakans,id',
+                'keterangan' => 'required|string',
+                'prioritas' => 'required|string|in:Critical,Hight,Medium,Low',
+                'lokasi' => 'required|string',
+                'teknisi_id' => 'required|exists:users,id',
+            ]);
+
+            $tanggal_pekerjaan = Carbon::today();
+
+            switch ($request->prioritas) {
+                case 'Critical':
+                    $tanggal_pekerjaan->addDays(2);
+                    break;
+                case 'Hight':
+                    $tanggal_pekerjaan->addDays(14);
+                    break;
+                case 'Medium':
+                    $tanggal_pekerjaan->addDays(30);
+                    break;
+                case 'Low':
+                    $tanggal_pekerjaan->addDays(90);
+                    break;
+            }
+
+            $validatedData['tanggal_pekerjaan'] = $tanggal_pekerjaan;
+
+            Perbaikan::create($validatedData);
+
+            return redirect('/perbaikan')->with('status', 'Data perbaikan berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+        }
+    }
+
+    public function edit($id)
+    {
+        $perbaikan = Perbaikan::findOrFail($id);
+        $laporans = LaporanKerusakan::all();
+        $teknisis = User::where('role', 'Mekanik')->get();
+
+        return view('perbaikan.edit', compact('perbaikan', 'laporans', 'teknisis'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            $validatedData = $request->validate([
+                'laporan_perbaikan_id' => 'required|exists:laporan_kerusakans,id',
+                'keterangan' => 'required|string',
+                'prioritas' => 'required|string|in:Critical,Hight,Medium,Low',
+                'lokasi' => 'required|string',
+                'teknisi_id' => 'required|exists:users,id',
+                'catatan_selesai' => 'nullable|string',
+                'tanggal_selesai' => 'nullable|date',
+            ]);
+
+            // Hitung ulang tanggal pekerjaan berdasarkan prioritas
+            $tanggal_pekerjaan = Carbon::today();
+
+            switch ($request->prioritas) {
+                case 'Critical':
+                    $tanggal_pekerjaan->addDays(2);
+                    break;
+                case 'Hight':
+                    $tanggal_pekerjaan->addDays(14);
+                    break;
+                case 'Medium':
+                    $tanggal_pekerjaan->addDays(30);
+                    break;
+                case 'Low':
+                    $tanggal_pekerjaan->addDays(90);
+                    break;
+            }
+
+            $validatedData['tanggal_pekerjaan'] = $tanggal_pekerjaan;
+
+            $perbaikan = Perbaikan::findOrFail($id);
+            $perbaikan->update($validatedData);
+
+            return redirect('/perbaikan')->with('status', 'Data perbaikan berhasil diupdate.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+        }
+    }
+
+
+    public function destroy($id)
+    {
+        $perbaikan = Perbaikan::findOrFail($id);
+        $perbaikan->delete();
+
+        return redirect('/perbaikan')->with('status', 'Data perbaikan berhasil dihapus.');
+    }
+}
