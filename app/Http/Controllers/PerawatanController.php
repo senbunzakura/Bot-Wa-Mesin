@@ -12,17 +12,32 @@ class PerawatanController extends Controller
 {
     public function index()
     {
-        $perawatan = perawatan::with(['mesin', 'teknisi'])->get();
+        $perawatan = perawatan::with(['mesin', 'mekanik'])->get();
         return view('perawatan.index', compact('perawatan'));
     }
 
     public function create()
     {
         $mesins = Mesin::all();
-        $teknisis = User::where('role', 'Mekanik')->get();// atau filter user role teknisi jika perlu
-        return view('perawatan.create', compact('mesins', 'teknisis'));
+        $mekaniks = User::where('role', 'Mekanik')->get();
+    
+        // Ambil kode_perawatan terakhir
+        $last = Perawatan::orderBy('id', 'desc')->first();
+        
+        if ($last) {
+            // Ambil angka terakhir dari format LPR-000001 → 1
+            $number = (int) substr($last->kode_perawatan, 4);
+            $newNumber = $number + 1;
+        } else {
+            $newNumber = 1;
+        }
+    
+        // Format ulang: LPR-000001
+        $kode_perawatan = 'LPR-' . str_pad($newNumber, 6, '0', STR_PAD_LEFT);
+    
+        return view('perawatan.create', compact('mesins', 'mekaniks', 'kode_perawatan'));
     }
-
+    
     public function store(Request $request)
     {
         try {
@@ -32,7 +47,7 @@ class PerawatanController extends Controller
                 'prioritas' => 'required|string',
                 // 'tanggal_pekerjaan' => 'required|date',
                 'keterangan' => 'required|string',
-                'teknisi_id' => 'required|exists:users,id',
+                'mekanik_id' => 'required|exists:users,id',
                 // 'status' => 'required|string',
             ]);
 
@@ -66,10 +81,10 @@ class PerawatanController extends Controller
     {
 
         $mesins = Mesin::all();
-        $teknisis = User::where('role', 'Mekanik')->get();
+        $mekaniks = User::where('role', 'Mekanik')->get();
         $perawatan = perawatan::findOrFail($id);
 
-        return view('perawatan.edit', compact('mesins', 'teknisis', 'perawatan'));
+        return view('perawatan.edit', compact('mesins', 'mekaniks', 'perawatan'));
     }
 
 
@@ -84,7 +99,7 @@ class PerawatanController extends Controller
                 'mesin_id' => 'required|exists:mesins,id',
                 'prioritas' => 'required|string',
                 'keterangan' => 'required|string',
-                'teknisi_id' => 'required|exists:users,id',
+                'mekanik_id' => 'required|exists:users,id',
                 'status' => 'required|string|in:Menunggu,Selesai',
             ]);
 

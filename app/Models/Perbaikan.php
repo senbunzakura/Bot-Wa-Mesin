@@ -15,9 +15,11 @@ class Perbaikan extends Model
         'prioritas',
         'lokasi',
         'tanggal_pekerjaan',
-        'teknisi_id',
+        'mekanik_id',
         'catatan_selesai',
         'tanggal_selesai',
+        'status',
+        'foto'
     ];
 
    // Relasi ke Laporan Kerusakan
@@ -26,9 +28,9 @@ class Perbaikan extends Model
         return $this->belongsTo(LaporanKerusakan::class, 'laporan_perbaikan_id');
     }
 
-    // Relasi ke User (Teknisi)
-    public function teknisi()
+    // Relasi ke User (mekanik)
+    public function mekanik()
     {
-        return $this->belongsTo(User::class, 'teknisi_id');
+        return $this->belongsTo(User::class, 'mekanik_id');
     }
 }

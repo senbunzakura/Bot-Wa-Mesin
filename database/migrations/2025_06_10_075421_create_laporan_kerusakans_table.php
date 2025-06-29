@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string('nomor_whatsapp')->nullable();
             $table->unsignedBigInteger('mesin_id')->nullable();
             $table->text('isi_laporan');
-            $table->enum('status', ['Diterima', 'Diproses', 'Selesai'])->default('diterima');
+            $table->enum('status', ['Diterima', 'Diproses', 'Selesai', 'Tertunda'])->default('diterima');
             $table->foreign('mesin_id')->references('id')->on('mesins')->onDelete('cascade');
             $table->timestamps();
         });

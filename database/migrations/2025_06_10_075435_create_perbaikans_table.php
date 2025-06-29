@@ -18,13 +18,15 @@ return new class extends Migration {
             $table->string('lokasi');
             $table->date('tanggal_pekerjaan');
 
-            $table->unsignedBigInteger('teknisi_id')->nullable();
+            $table->unsignedBigInteger('mekanik_id')->nullable();
+            $table->enum('status', ['Dijadwalkan', 'Dalam Proses', 'Tertunda', 'Selesai'])->default('Dijadwalkan');
             $table->text('catatan_selesai')->nullable();
             $table->date('tanggal_selesai')->nullable();
+            $table->text('foto')->nullable();
             $table->timestamps();
 
             $table->foreign('laporan_perbaikan_id')->references('id')->on('laporan_kerusakans')->onDelete('cascade');
-            $table->foreign('teknisi_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('mekanik_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
