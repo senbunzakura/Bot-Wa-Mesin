@@ -46,7 +46,7 @@ class FoonteWebhookController extends Controller
                         'mesin_id' => $mesin->id,
                         'isi_laporan' => $isiLaporan,
                         'status' => 'Diterima',
-                        'nama_pelapor' => $namaPelapor
+                        // 'nama_pelapor' => $namaPelapor
                     ]);
 
                     $this->kirimBalasan($nomor, "✅ Laporan berhasil disimpan.\nKode: {$laporan->kode_laporan}\nTerima kasih, {$namaPelapor}.");
