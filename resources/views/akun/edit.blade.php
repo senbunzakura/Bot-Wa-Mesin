@@ -92,7 +92,7 @@
                                         <select name="role" class="form-control" required="required">
                                             <option value="">Pilih Role</option>
                                             <option value="admin" {{ old('role', $akun->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                                            <option value="pelapor" {{ old('role', $akun->role) == 'pelapor' ? 'selected' : '' }}>Pelapor</option>
+                                            {{-- <option value="pelapor" {{ old('role', $akun->role) == 'pelapor' ? 'selected' : '' }}>Pelapor</option> --}}
                                             <option value="kepala_bagian" {{ old('role', $akun->role) == 'kepala_bagian' ? 'selected' : '' }}>Kepala Bagian</option>
                                             <option value="mekanik" {{ old('role', $akun->role) == 'mekanik' ? 'selected' : '' }}>Mekanik</option>
                                         </select>

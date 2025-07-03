@@ -17,15 +17,16 @@ return new class extends Migration {
             $table->enum('prioritas', ['Low', 'Medium', 'High', 'Critical'])->default('Medium');
             $table->date('tanggal_pekerjaan');
             $table->text('keterangan')->nullable();
-            $table->unsignedBigInteger('teknisi_id');
-            $table->enum('status', ['Dalam Pengerjaan', 'Selesai'])->default('Dalam Pengerjaan');
+            $table->unsignedBigInteger('mekanik_id');
+            $table->enum('status', ['Dalam Pengerjaan', 'Selesai', 'Tertunda'])->default('Dalam Pengerjaan');
             $table->text('catatan_selesai')->nullable();
-            $table->date('selesai_pada')->nullable();
+            $table->date('tanggal_selesai')->nullable();
+            $table->text('foto')->nullable();
 
             $table->timestamps();
 
             $table->foreign('mesin_id')->references('id')->on('mesins')->onDelete('cascade');
-            $table->foreign('teknisi_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('mekanik_id')->references('id')->on('users')->onDelete('cascade');
 
         });
     }

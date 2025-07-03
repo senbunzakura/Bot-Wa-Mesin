@@ -12,17 +12,17 @@ class PerbaikanController extends Controller
 {
     public function index()
     {
-        $perbaikan = Perbaikan::with('laporanKerusakan', 'teknisi')->get();
+        $perbaikan = Perbaikan::with('laporanKerusakan', 'mekanik')->get();
 
         return view('perbaikan.index', compact('perbaikan'));
     }
 
     public function create()
     {
-        $laporans = LaporanKerusakan::all();
-        $teknisis = User::where('role', 'Mekanik')->get();
+        $laporans = LaporanKerusakan::with('mesin')->where('status', 'Diterima')->get();
+        $mekaniks = User::where('role', 'mekanik')->get();
 
-        return view('perbaikan.create', compact('laporans', 'teknisis'));
+        return view('perbaikan.create', compact('laporans', 'mekaniks'));
     }
 
     public function store(Request $request)
@@ -31,18 +31,18 @@ class PerbaikanController extends Controller
             $validatedData = $request->validate([
                 'laporan_perbaikan_id' => 'required|exists:laporan_kerusakans,id',
                 'keterangan' => 'required|string',
-                'prioritas' => 'required|string|in:Critical,Hight,Medium,Low',
+                'prioritas' => 'required|string|in:Critical,High,Medium,Low',
                 'lokasi' => 'required|string',
-                'teknisi_id' => 'required|exists:users,id',
+                'mekanik_id' => 'required|exists:users,id',
             ]);
 
             $tanggal_pekerjaan = Carbon::today();
 
-            switch ($request->prioritas) {
+            switch ($validatedData['prioritas']) {
                 case 'Critical':
                     $tanggal_pekerjaan->addDays(2);
                     break;
-                case 'Hight':
+                case 'High':
                     $tanggal_pekerjaan->addDays(14);
                     break;
                 case 'Medium':
@@ -54,8 +54,17 @@ class PerbaikanController extends Controller
             }
 
             $validatedData['tanggal_pekerjaan'] = $tanggal_pekerjaan;
+            $validatedData['status'] = 'Dijadwalkan'; // set default status
 
+            // Simpan Perbaikan
             Perbaikan::create($validatedData);
+
+            // Update status laporan jika masih "Diterima"
+            $laporan = LaporanKerusakan::find($validatedData['laporan_perbaikan_id']);
+            if ($laporan && $laporan->status === 'Diterima') {
+                $laporan->status = 'Diproses';
+                $laporan->save();
+            }
 
             return redirect('/perbaikan')->with('status', 'Data perbaikan berhasil ditambahkan.');
         } catch (\Exception $e) {
@@ -65,11 +74,11 @@ class PerbaikanController extends Controller
 
     public function edit($id)
     {
-        $perbaikan = Perbaikan::findOrFail($id);
-        $laporans = LaporanKerusakan::all();
-        $teknisis = User::where('role', 'Mekanik')->get();
+        $perbaikan = Perbaikan::with(['laporanKerusakan', 'mekanik'])->findOrFail($id);
+        $laporans = LaporanKerusakan::with('mesin' )->get();
+        $mekaniks = User::where('role', 'mekanik')->get();
 
-        return view('perbaikan.edit', compact('perbaikan', 'laporans', 'teknisis'));
+        return view('perbaikan.edit', compact('perbaikan', 'laporans', 'mekaniks'));
     }
 
     public function update(Request $request, $id)
@@ -78,21 +87,23 @@ class PerbaikanController extends Controller
             $validatedData = $request->validate([
                 'laporan_perbaikan_id' => 'required|exists:laporan_kerusakans,id',
                 'keterangan' => 'required|string',
-                'prioritas' => 'required|string|in:Critical,Hight,Medium,Low',
+                'prioritas' => 'required|string|in:Critical,High,Medium,Low',
                 'lokasi' => 'required|string',
-                'teknisi_id' => 'required|exists:users,id',
+                'mekanik_id' => 'required|exists:users,id',
                 'catatan_selesai' => 'nullable|string',
                 'tanggal_selesai' => 'nullable|date',
+                'status' => 'required|string|in:Dijadwalkan,Dalam Proses,Tertunda,Selesai',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
             // Hitung ulang tanggal pekerjaan berdasarkan prioritas
             $tanggal_pekerjaan = Carbon::today();
 
-            switch ($request->prioritas) {
+            switch ($validatedData['prioritas']) {
                 case 'Critical':
                     $tanggal_pekerjaan->addDays(2);
                     break;
-                case 'Hight':
+                case 'High':
                     $tanggal_pekerjaan->addDays(14);
                     break;
                 case 'Medium':
@@ -105,14 +116,33 @@ class PerbaikanController extends Controller
 
             $validatedData['tanggal_pekerjaan'] = $tanggal_pekerjaan;
 
+            // Handle foto jika ada
+            if ($request->hasFile('foto')) {
+                $foto = $request->file('foto');
+                $namaFile = time() . '_' . $foto->getClientOriginalName();
+                $foto->move(public_path('uploads/foto_perbaikan'), $namaFile);
+                $validatedData['foto'] = 'uploads/foto_perbaikan/' . $namaFile;
+            }
+
+            // Update Perbaikan
             $perbaikan = Perbaikan::findOrFail($id);
             $perbaikan->update($validatedData);
+
+            // Update status pada LaporanKerusakan jika perlu
+            $laporan = $perbaikan->laporanKerusakan;
+            if ($validatedData['status'] === 'Selesai') {
+                $laporan->status = 'Selesai';
+            } elseif ($validatedData['status'] === 'Tertunda') {
+                $laporan->status = 'Tertunda';
+            }
+            $laporan->save();
 
             return redirect('/perbaikan')->with('status', 'Data perbaikan berhasil diupdate.');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
+
 
 
     public function destroy($id)

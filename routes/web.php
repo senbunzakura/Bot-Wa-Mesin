@@ -13,40 +13,58 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/', [App\Http\Controllers\AuthController::class, 'index'])->name('showlogin');
+
+
+Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login');
+Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
+
+
 // Dashboard
-Route::get('/', [App\Http\Controllers\DashboardController::class, 'index']);
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index']);
 
 // Akun
-Route::get('/akun', [App\Http\Controllers\AkunController::class, 'index']);
-Route::get('/akun/create', [App\Http\Controllers\AkunController::class, 'create']);
-Route::post('/akun/store', [App\Http\Controllers\AkunController::class, 'store']);
-Route::get('/akun/edit/{id}', [App\Http\Controllers\AkunController::class, 'edit']);
-Route::patch('/akun/update/{id}', [App\Http\Controllers\AkunController::class, 'update']);
-Route::delete('/akun/delete/{id}', [App\Http\Controllers\AkunController::class, 'delete']);
-
+Route::get('/akun', [App\Http\Controllers\AkunController::class, 'index'])->name('akun.index');
+Route::get('/akun/create', [App\Http\Controllers\AkunController::class, 'create'])->name('akun.create');
+Route::post('/akun/store', [App\Http\Controllers\AkunController::class, 'store'])->name('akun.store');
+Route::get('/akun/edit/{id}', [App\Http\Controllers\AkunController::class, 'edit'])->name('akun.edit');
+Route::patch('/akun/update/{id}', [App\Http\Controllers\AkunController::class, 'update'])->name('akun.update');
+Route::delete('/akun/delete/{id}', [App\Http\Controllers\AkunController::class, 'delete'])->name('akun.delete');
 
 // Mesin
-Route::get('/mesin', [App\Http\Controllers\MesinController::class, 'index']);
-Route::get('/mesin/create', [App\Http\Controllers\MesinController::class, 'create']);
-Route::post('/mesin/store', [App\Http\Controllers\MesinController::class, 'store']);
-Route::get('/mesin/edit/{id}', [App\Http\Controllers\MesinController::class, 'edit']);
-Route::patch('/mesin/update/{id}', [App\Http\Controllers\MesinController::class, 'update']);
-Route::delete('/mesin/delete/{id}', [App\Http\Controllers\MesinController::class, 'delete']);
+Route::get('/mesin', [App\Http\Controllers\MesinController::class, 'index'])->name('mesin.index');
+Route::get('/mesin/create', [App\Http\Controllers\MesinController::class, 'create'])->name('mesin.create');
+Route::post('/mesin/store', [App\Http\Controllers\MesinController::class, 'store'])->name('mesin.store');
+Route::get('/mesin/edit/{id}', [App\Http\Controllers\MesinController::class, 'edit'])->name('mesin.edit');
+Route::patch('/mesin/update/{id}', [App\Http\Controllers\MesinController::class, 'update'])->name('mesin.update');
+Route::delete('/mesin/delete/{id}', [App\Http\Controllers\MesinController::class, 'delete'])->name('mesin.delete');
 
 // Perawatan
-Route::get('/perawatan', [App\Http\Controllers\PerawatanController::class, 'index']);
-Route::get('/perawatan/create', [App\Http\Controllers\PerawatanController::class, 'create']);
-Route::post('/perawatan/store', [App\Http\Controllers\PerawatanController::class, 'store']);
-Route::get('/perawatan/edit/{id}', [App\Http\Controllers\PerawatanController::class, 'edit']);
-Route::patch('/perawatan/update/{id}', [App\Http\Controllers\PerawatanController::class, 'update']);
-Route::delete('/perawatan/delete/{id}', [App\Http\Controllers\PerawatanController::class, 'delete']);
+Route::get('/perawatan', [App\Http\Controllers\PerawatanController::class, 'index'])->name('perawatan.index');
+Route::get('/perawatan/create', [App\Http\Controllers\PerawatanController::class, 'create'])->name('perawatan.create');
+Route::post('/perawatan/store', [App\Http\Controllers\PerawatanController::class, 'store'])->name('perawatan.store');
+Route::get('/perawatan/edit/{id}', [App\Http\Controllers\PerawatanController::class, 'edit'])->name('perawatan.edit');
+Route::patch('/perawatan/update/{id}', [App\Http\Controllers\PerawatanController::class, 'update'])->name('perawatan.update');
+Route::delete('/perawatan/delete/{id}', [App\Http\Controllers\PerawatanController::class, 'delete'])->name('perawatan.delete');
+
+
+// Laporan Kerusakan
+Route::get('/laporan-kerusakan', [App\Http\Controllers\LaporanKerusakanController::class, 'index'])->name('kerusakan.index');
+
 
 // Perbaikan
-Route::get('/perbaikan', [App\Http\Controllers\PerbaikanController::class, 'index']);
-Route::get('/perbaikan/create', [App\Http\Controllers\PerbaikanController::class, 'create']);
-Route::post('/perbaikan/store', [App\Http\Controllers\PerbaikanController::class, 'store']);
-Route::get('/perbaikan/edit/{id}', [App\Http\Controllers\PerbaikanController::class, 'edit']);
-Route::patch('/perbaikan/update/{id}', [App\Http\Controllers\PerbaikanController::class, 'update']);
-Route::delete('/perbaikan/delete/{id}', [App\Http\Controllers\PerbaikanController::class, 'delete']);
+Route::get('/perbaikan', [App\Http\Controllers\PerbaikanController::class, 'index'])->name('perbaikan.index');
+Route::get('/perbaikan/create', [App\Http\Controllers\PerbaikanController::class, 'create'])->name('perbaikan.create');
+Route::post('/perbaikan/store', [App\Http\Controllers\PerbaikanController::class, 'store'])->name('perbaikan.store');
+Route::get('/perbaikan/edit/{id}', [App\Http\Controllers\PerbaikanController::class, 'edit'])->name('perbaikan.edit');
+Route::patch('/perbaikan/update/{id}', [App\Http\Controllers\PerbaikanController::class, 'update'])->name('perbaikan.update');
+Route::delete('/perbaikan/delete/{id}', [App\Http\Controllers\PerbaikanController::class, 'delete'])->name('perbaikan.delete');
 
-Route::post('/fonnte/webhook',  [App\Http\Controllers\FoonteWebhookController::class, 'receive']);
+// Laporan Perbaikan
+Route::get('/laporan-perbaikan', [App\Http\Controllers\LaporanController::class, 'indexPerbaikan']);
+Route::get('/cetak-laporan-perbaikan/{tanggal_awal}/{tanggal_akhir}', [App\Http\Controllers\LaporanController::class, 'printPerbaikan']);
+
+// Laporan Perawatan
+Route::get('/laporan-perawatan', [App\Http\Controllers\LaporanController::class, 'indexPerawatan']);
+Route::get('/cetak-laporan-perawatan/{tanggal_awal}/{tanggal_akhir}', [App\Http\Controllers\LaporanController::class, 'printPerawatan']);

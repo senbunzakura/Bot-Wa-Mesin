@@ -15,10 +15,10 @@ class perawatan extends Model
         'prioritas',
         'tanggal_pekerjaan',
         'keterangan',
-        'teknisi_id',
+        'mekanik_id',
         'status',
-        'catatan_selesai',
-        'selesai_pada',
+        'tanggal_selesai',
+        'foto'
     ];
 
   // Relasi ke Mesin
@@ -27,10 +27,10 @@ class perawatan extends Model
         return $this->belongsTo(Mesin::class);
     }
 
-    // Relasi ke User (Teknisi)
-    public function teknisi()
+    // Relasi ke User (mekanik)
+    public function mekanik()
     {
-        return $this->belongsTo(User::class, 'teknisi_id');
+        return $this->belongsTo(User::class, 'mekanik_id');
     }
 
 
