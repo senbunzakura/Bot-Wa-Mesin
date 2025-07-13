@@ -57,17 +57,17 @@
                 @foreach ($perbaikan as $laporan)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $laporan->kode_laporan }}</td>
-                        <td>{{ $laporan->nomor_whatsapp }}</td>
-                        <td>{{ $laporan->mesin?->nama ?? '-' }}</td>
-                        <td class="wrap-text">{{ $laporan->isi_laporan }}</td>
+                        <td>{{ $laporan->laporanKerusakan->kode_laporan }}</td>
+                        <td>{{ $laporan->laporanKerusakan->nomor_whatsapp }}</td>
+                        <td>{{ $laporan->laporanKerusakan->mesin?->nama_mesin ?? '-' }}</td>
+                        <td class="wrap-text">{{ $laporan->laporanKerusakan->isi_laporan }}</td>
                         <td>{{ $laporan->status }}</td>
-                        <td>{{ $laporan->perbaikan?->prioritas ?? '-' }}</td>
-                        <td>{{ $laporan->perbaikan?->lokasi ?? '-' }}</td>
-                        <td>{{ $laporan->perbaikan?->tanggal_pekerjaan ?? '-' }}</td>
-                        <td>{{ $laporan->perbaikan?->mekanik?->name ?? '-' }}</td>
-                        <td>{{ $laporan->perbaikan?->status ?? '-' }}</td>
-                        <td>{{ $laporan->perbaikan?->tanggal_selesai ?? '-' }}</td>
+                        <td>{{ $laporan->prioritas ?? '-' }}</td>
+                        <td>{{ $laporan->lokasi ?? '-' }}</td>
+                        <td>{{ $laporan->tanggal_pekerjaan ?? '-' }}</td>
+                        <td>{{ $laporan->mekanik?->name ?? '-' }}</td>
+                        <td>{{ $laporan->status ?? '-' }}</td>
+                        <td>{{ $laporan->tanggal_selesai ?? '-' }}</td>
                     </tr>
                 @endforeach
             </tbody>
