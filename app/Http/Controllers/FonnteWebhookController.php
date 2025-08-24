@@ -12,6 +12,17 @@ use Illuminate\Support\Str;
 
 class FonnteWebhookController extends Controller
 {
+    // public function handleWeebhook(Request $request)
+    // {
+    //     // Log the incoming request for debugging
+    //     Log::info('Webhook fonnte diterima :');
+    //     dd($request->all());
+
+    //     // Process the webhook data as needed
+    //     // ...
+
+    //     return response()->json(['status' => 'success']);
+    // }
     // Tambahkan property untuk menyimpan nomor bot
     protected $botNumber;
 
@@ -24,6 +35,7 @@ class FonnteWebhookController extends Controller
 
     public function receive(Request $request)
     {
+        // dd($request->all());
         // Fonnte tidak selalu mengirimkan 'sender' di setiap payload
         // Beberapa payload, seperti pesan status, tidak memiliki 'sender'
         // Gunakan 'all()' untuk melihat seluruh payload
@@ -51,10 +63,10 @@ class FonnteWebhookController extends Controller
         // --- Cek 3: Validasi Format Pesan ---
         // Jika format pesan tidak valid, Fonnte akan mengembalikan status 'error',
         // tetapi kita tetap perlu memastikan data ada sebelum diproses.
-        $request->validate([
-            'sender' => 'required',
-            'message' => 'required'
-        ]);
+        // $request->validate([
+        //     'sender' => 'required',
+        //     'message' => 'required'
+        // ]);
 
         Log::info('Pesan valid dari pengguna', [
             'nomor' => $nomor,
